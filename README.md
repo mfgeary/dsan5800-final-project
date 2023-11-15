@@ -10,7 +10,7 @@ Potential Models:
 | Model | Link | About |
 |-------|------|-------|
 | xlm-mlm-en-2048 | [https://huggingface.co/xlm-mlm-en-2048?text=The+goal+of+life+is+%3Cspecial1%3E.](https://huggingface.co/xlm-mlm-en-2048?text=The+goal+of+life+is+%3Cspecial1%3E.) | Masked inference model |
-
+| bert-base-cased | [https://huggingface.co/bert-base-cased](https://huggingface.co/bert-base-cased) | Masked inference model, 110M params, high performance |
 
 
 Potential UIs:
