@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Homophone Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+        h1 {
+            color: #333;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        .names {
+            color: #888;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            box-sizing: border-box;
+            height: 150px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Homophone Checker</h1>
+        <div class="subtitle">DSAN 5800 Final Project - Group 1</div>
+        <div class="names">Austin Barish, Marion Bauman, Hongxin Wu</div>
+        <textarea id="inputText" placeholder="Type a sentence here..."></textarea>
+        <button id="submitBtn">Check</button>
+        <textarea id="outputText" placeholder="Corrected sentence will appear here..." readonly></textarea>
+    </div>
+
+    <script>
+        document.getElementById('submitBtn').addEventListener('click', function() {
+            var sentence = document.getElementById('inputText').value;
+            fetch('/check_homophone', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({sentence: sentence}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('outputText').value = data.correct_sentence;
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
