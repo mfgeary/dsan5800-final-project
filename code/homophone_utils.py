@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from transformers import pipeline
 from tqdm import tqdm
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 homophones_list = [
     ['accessary', 'accessory'],
@@ -450,6 +451,18 @@ homophones_list = [
     ["you'll", 'yule']
 ]
 
+# Load the spelling correction model and tokenizer with unique variable names
+spelling_correction_model_name = 'oliverguhr/spelling-correction-english-base'
+spelling_model = AutoModelForSeq2SeqLM.from_pretrained(spelling_correction_model_name)
+spelling_tokenizer = AutoTokenizer.from_pretrained(spelling_correction_model_name)
+
+# Define the spelling correction function
+def correct_spelling(input_text):
+    tokens = spelling_tokenizer(input_text, return_tensors="pt")
+    outputs = spelling_model.generate(**tokens)
+    corrected_text = spelling_tokenizer.decode(outputs[0], skip_special_tokens=True)
+    return corrected_text
+
 # Load the model
 model='bert-base-uncased'
 fill_mask = pipeline('fill-mask', model=model)
@@ -579,19 +592,38 @@ def homophone_checker(input_string, homophones_list=homophones_list, score_thres
 
                     total_sentence = total_sentence.replace(target_homophone, homophone_results[0][0])
 
-       
-        # Create output dataframe that matches our test data
-        output_df = pd.DataFrame(
-                {
-                    "sentence": input_string,
-                    "has_homophone": True,
-                    "is_error": any(is_error),
-                    "error_idx": [[e for e in error_idx if e is not None]],
-                    "error": [[e for e in error if e is not None]],
-                    "correct_word": [[word for word in correct_word if word is not None]],
-                    "correct_sentence": total_sentence,
-                }, index=[0]
-            )
+        # After obtaining the correct_sentence
+        correct_sentence = total_sentence  # This is the sentence after homophone correction
+        spelling_correct_sentence = correct_spelling(correct_sentence)  # Perform spelling correction
 
-        # print(total_sentence)
+        # Create output DataFrame with an additional column for spelling_correct_sentence
+        output_df = pd.DataFrame(
+            {
+                "sentence": input_string,
+                "has_homophone": True,
+                "is_error": any(is_error),
+                "error_idx": [[e for e in error_idx if e is not None]],
+                "error": [[e for e in error if e is not None]],
+                "correct_word": [[word for word in correct_word if word is not None]],
+                "correct_sentence": correct_sentence,
+                "spelling_correct_sentence": spelling_correct_sentence,  # New column
+            }, index=[0]
+        )
+
         return output_df
+    
+        # # Create output dataframe that matches our test data
+        # output_df = pd.DataFrame(
+        #         {
+        #             "sentence": input_string,
+        #             "has_homophone": True,
+        #             "is_error": any(is_error),
+        #             "error_idx": [[e for e in error_idx if e is not None]],
+        #             "error": [[e for e in error if e is not None]],
+        #             "correct_word": [[word for word in correct_word if word is not None]],
+        #             "correct_sentence": total_sentence,
+        #         }, index=[0]
+        #     )
+
+        # # print(total_sentence)
+        # return output_df

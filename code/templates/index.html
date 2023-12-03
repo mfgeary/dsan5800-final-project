@@ -49,7 +49,7 @@
         }
     </style>
 </head>
-<body>
+<!-- <body>
     <div class="container">
         <h1>Homophone Checker</h1>
         <div class="subtitle">DSAN 5800 Final Project - Group 1</div>
@@ -72,6 +72,39 @@
             .then(response => response.json())
             .then(data => {
                 document.getElementById('outputText').value = data.correct_sentence;
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body> -->
+<body>
+    <div class="container">
+        <h1>Homophone Checker</h1>
+        <div class="subtitle">DSAN 5800 Final Project - Group 1</div>
+        <div class="names">Austin Barish, Marion Bauman, Hongxin Wu</div>
+        <textarea id="inputText" placeholder="Type a sentence here..."></textarea>
+        <button id="submitBtn">Check</button>
+        <textarea id="homophoneCorrectedText" placeholder="Homophone corrected sentence will appear here..." readonly></textarea>
+        <textarea id="spellingCorrectedText" placeholder="Spelling corrected sentence will appear here..." readonly></textarea>
+    </div>
+
+    <script>
+        document.getElementById('submitBtn').addEventListener('click', function() {
+            var sentence = document.getElementById('inputText').value;
+            fetch('/check_homophone', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({sentence: sentence}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display both homophone corrected and spelling corrected sentences
+                document.getElementById('homophoneCorrectedText').value = data.homophone_corrected_sentence;
+                document.getElementById('spellingCorrectedText').value = data.spelling_corrected_sentence;
             })
             .catch((error) => {
                 console.error('Error:', error);
