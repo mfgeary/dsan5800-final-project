@@ -1,6 +1,14 @@
 import pandas as pd
-from transformers import pipeline
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+import requests
+
+BERT_API_URL = "https://api-inference.huggingface.co/models/bert-base-uncased"
+SPELL_CHECK_API_URL = "https://api-inference.huggingface.co/models/oliverguhr/spelling-correction-english-base"
+
+headers = {"Authorization": "Bearer API_KEY"}
+
+def query(payload, API_URL=BERT_API_URL):
+	response = requests.post(API_URL, headers=headers, json=payload)
+	return response.json()
 
 homophones_list = [
     ['accessary', 'accessory'],
@@ -447,21 +455,10 @@ homophones_list = [
     ["you'll", 'yule']
 ]
 
-# Load the spelling correction model and tokenizer with unique variable names
-spelling_correction_model_name = 'oliverguhr/spelling-correction-english-base'
-spelling_model = AutoModelForSeq2SeqLM.from_pretrained(spelling_correction_model_name)
-spelling_tokenizer = AutoTokenizer.from_pretrained(spelling_correction_model_name)
-
 # Define the spelling correction function
 def correct_spelling(input_text):
-    tokens = spelling_tokenizer(input_text, return_tensors="pt")
-    outputs = spelling_model.generate(**tokens)
-    corrected_text = spelling_tokenizer.decode(outputs[0], skip_special_tokens=True)
-    return corrected_text
-
-# Load the model
-model='bert-base-uncased'
-fill_mask = pipeline('fill-mask', model=model)
+    output = query(payload={"inputs": input_text}, API_URL=SPELL_CHECK_API_URL)
+    return output[0]["generated_text"]
 
 def homophone_checker(input_string, homophones_list=homophones_list, score_threshold=0):
     # Final output sentence 
@@ -509,14 +506,16 @@ def homophone_checker(input_string, homophones_list=homophones_list, score_thres
             homophone_options = [homophone for homophone in homophones_list if target_homophone in homophone]
 
             # Replace homophone with mask token
-            input_string_list[target_homophone_idx] = fill_mask.tokenizer.mask_token
+            input_string_list[target_homophone_idx] = "[MASK]"
             masked_string = ' '.join(input_string_list)
-            # print(masked_string)
-            
-            # Get results
-            try:
-                results = fill_mask(masked_string, top_k=20)
-            except RuntimeError:
+
+            payload = {"inputs": masked_string, "options": homophone_options, "top_k": 20}
+            response = query(payload, API_URL=BERT_API_URL)
+
+            if response:
+                results = response
+            else:
+                # Handle error response
                 final_sentence.append(input_string)
                 is_error.append(False)
                 correct_word.append(None)
@@ -532,7 +531,6 @@ def homophone_checker(input_string, homophones_list=homophones_list, score_thres
                 try:
                     token_string_dict[result["token_str"]] = result["score"]
                 except TypeError:
-                    # print(result)
                     pass
 
             # Sort results
@@ -540,7 +538,6 @@ def homophone_checker(input_string, homophones_list=homophones_list, score_thres
 
             # Find top homophone in results
             homophone_results = [result for result in sorted_results if result[0] in homophone_options[0]]
-            # print(homophone_results)
             
             # If the top result is the target homophone, return the original sentence as it is correct
             try:
@@ -591,6 +588,7 @@ def homophone_checker(input_string, homophones_list=homophones_list, score_thres
         # After obtaining the correct_sentence
         correct_sentence = total_sentence  # This is the sentence after homophone correction
         spelling_correct_sentence = correct_spelling(correct_sentence)  # Perform spelling correction
+        print(spelling_correct_sentence)
 
         # Create output DataFrame with an additional column for spelling_correct_sentence
         output_df = pd.DataFrame(
