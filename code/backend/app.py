@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify, render_template
 from homophone_utils import homophone_checker
-import pandas as pd
 
 app = Flask(__name__)
 
