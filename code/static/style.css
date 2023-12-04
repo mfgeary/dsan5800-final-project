@@ -1,0 +1,59 @@
+body, html {
+    height: 100%; /* Ensure the full height of the page is used */
+    margin: 0;
+    display: flex; /* Use Flexbox */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    background-color: #E0F7FA; /* Light blue background */
+    font-family: 'Arial', sans-serif;
+    color: #333333;
+}
+
+.container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); /* Adding a subtle shadow for depth */
+    background-color: white; /* White background for the content area */
+    border-radius: 10px; /* Rounded corners for the container */
+}
+
+h1 {
+    color: #00796B; /* A darker shade of blue for headers */
+}
+
+.subtitle, .names {
+    color: #0097A7; /* A slightly lighter shade for subtitles */
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    box-sizing: border-box;
+    height: 150px;
+    border-radius: 5px; /* Rounded corners for textareas */
+    border: 1px solid #B2EBF2; /* Light blue border for textareas */
+}
+
+button {
+    display: block;  /* Make the button a block-level element */
+    margin: 0 auto;  /* Top and bottom margins 0, left and right margins auto */
+    padding: 10px 20px;
+    background-color: #4DB6AC; /* Teal background for buttons */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #00897B; /* Slightly darker teal on hover */
+}
+
+.explanation {
+    margin-top: 5px;
+    font-size: 14px;
+    color: #006064; /* Darker text for explanations */
+}
