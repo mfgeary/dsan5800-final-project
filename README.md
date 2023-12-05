@@ -1,6 +1,8 @@
 # dsan5800-final-project
 Final Project for DSAN 5800: Advanced Natural Language Processing
 
+Our final report can be found as [final-report.html](./final-report.html) as well as on our GitHub pages site which also contains a link to our demo at [https://mfgeary.github.io/dsan5800-final-project/](https://mfgeary.github.io/dsan5800-final-project/).
+
 Group members:
 * Austin Barish
 * Marion Bauman
