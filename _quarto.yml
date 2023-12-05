@@ -1,6 +1,7 @@
 project:
   type: website
-  render: "docs/index.ipynb"
+  render:
+   - "docs/index.ipynb"
 
 website:
   title: Homophone Checker
