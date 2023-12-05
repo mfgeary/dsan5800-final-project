@@ -1,0 +1,26 @@
+project:
+  type: website
+  render: "index.ipynb"
+
+website:
+  title: Homophone Checker
+  navbar:
+    left:
+      - href: index.html
+        text: Project Report
+      - href: https://homophone-checker-693b82ca3f33.herokuapp.com/
+        target: _blank
+        text: Demo
+    right:
+      - icon: github
+        href: https://github.com/mfgeary/dsan5800-final-project
+        aria-label: GitHub
+  page-footer:
+    right: |
+      Made with {{< fa brands r-project >}} and [Quarto](https://quarto.org/)<br>
+
+
+format:
+  html:
+    theme: minty
+    toc: true
