@@ -4,7 +4,7 @@ import requests
 BERT_API_URL = "https://api-inference.huggingface.co/models/bert-base-uncased"
 SPELL_CHECK_API_URL = "https://api-inference.huggingface.co/models/oliverguhr/spelling-correction-english-base"
 
-headers = {"Authorization": "Bearer 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"}
+headers = {"Authorization": "Bearer API_KEY"}
 
 def query(payload, API_URL=BERT_API_URL):
     response = requests.post(API_URL, headers=headers, json=payload)
