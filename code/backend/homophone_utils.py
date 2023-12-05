@@ -4,11 +4,14 @@ import requests
 BERT_API_URL = "https://api-inference.huggingface.co/models/bert-base-uncased"
 SPELL_CHECK_API_URL = "https://api-inference.huggingface.co/models/oliverguhr/spelling-correction-english-base"
 
-headers = {"Authorization": "Bearer API_KEY"}
+headers = {"Authorization": "Bearer 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"}
 
 def query(payload, API_URL=BERT_API_URL):
-	response = requests.post(API_URL, headers=headers, json=payload)
-	return response.json()
+    response = requests.post(API_URL, headers=headers, json=payload)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return None
 
 homophones_list = [
     ['accessary', 'accessory'],
@@ -458,6 +461,8 @@ homophones_list = [
 # Define the spelling correction function
 def correct_spelling(input_text):
     output = query(payload={"inputs": input_text}, API_URL=SPELL_CHECK_API_URL)
+    if output == None:
+        return input_text
     return output[0]["generated_text"]
 
 def homophone_checker(input_string, homophones_list=homophones_list, score_threshold=0):
@@ -475,10 +480,10 @@ def homophone_checker(input_string, homophones_list=homophones_list, score_thres
 
     # Find homophones in input string
     target_homophones = [(word, i) for i, word in enumerate(input_string_list) if list(set([word]).intersection(set(all_homophones)))]
-    # print(target_homophones)
 
     # If there are no homophones in the sentence, return the NA dataframe
     if len(target_homophones) < 1:
+        spelling_correct_sentence = correct_spelling(input_string)
         output_df = pd.DataFrame(
             {
                 "sentence": input_string,
@@ -487,7 +492,8 @@ def homophone_checker(input_string, homophones_list=homophones_list, score_thres
                 "error_idx": None,
                 "error": None,
                 "correct_word": None,
-                "correct_sentence": None,
+                "correct_sentence": total_sentence,
+                "spelling_correct_sentence": spelling_correct_sentence,  # New column
             }, index=[0]
         )
         return output_df
@@ -588,7 +594,6 @@ def homophone_checker(input_string, homophones_list=homophones_list, score_thres
         # After obtaining the correct_sentence
         correct_sentence = total_sentence  # This is the sentence after homophone correction
         spelling_correct_sentence = correct_spelling(correct_sentence)  # Perform spelling correction
-        print(spelling_correct_sentence)
 
         # Create output DataFrame with an additional column for spelling_correct_sentence
         output_df = pd.DataFrame(
